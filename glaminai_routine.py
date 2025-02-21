@@ -9,11 +9,14 @@ app = Flask(__name__)
 load_dotenv()
 
 # Get OpenAI API key from environment variables
-openai.api_key = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Error handling if API key is missing
-if not openai.api_key:
+if not OPENAI_API_KEY:
     raise ValueError("Error: OpenAI API key is missing! Set OPENAI_API_KEY as an environment variable.")
+
+# Initialize OpenAI client
+client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 # AI Routine Generator Function
 def generate_routine(skin_type, concern, makeup_pref, finish):
@@ -45,14 +48,14 @@ def generate_routine(skin_type, concern, makeup_pref, finish):
     - Extra Tips:
     """
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4-turbo",
         messages=[{"role": "system", "content": "Generate a skincare & makeup routine with an engaging, confident tone."},
                   {"role": "user", "content": prompt}],
         max_tokens=300
     )
 
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 # API Endpoint to Receive User Input
 @app.route("/generate", methods=["POST"])
