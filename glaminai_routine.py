@@ -50,8 +50,10 @@ def generate_routine(skin_type, concern, makeup_pref, finish):
 
     response = client.chat.completions.create(
         model="gpt-4-turbo",
-        messages=[{"role": "system", "content": "Generate a skincare & makeup routine with an engaging, confident tone."},
-                  {"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": "Generate a skincare & makeup routine with an engaging, confident tone."},
+            {"role": "user", "content": prompt}
+        ],
         max_tokens=300
     )
 
@@ -70,6 +72,7 @@ def generate():
     result = generate_routine(data["skin_type"], data["concern"], data["makeup_pref"], data["finish"])
     return jsonify({"routine": result})
 
-# Run the app
+# Run the app (Fix for Render binding issue)
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000, debug=True)
+    port = int(os.environ.get("PORT", 10000))  # Ensures Render assigns the correct port
+    app.run(host="0.0.0.0", port=port, debug=True)
